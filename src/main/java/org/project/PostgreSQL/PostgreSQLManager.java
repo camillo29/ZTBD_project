@@ -1,6 +1,10 @@
 package org.project.PostgreSQL;
 
 import org.flywaydb.core.Flyway;
+import org.project.Factories.DishFactory;
+import org.project.Factories.OfficeFactory;
+import org.project.Models.Dish;
+import org.project.Models.Office;
 import org.project.PostgreSQL.CRUD.DeleteManager;
 import org.project.PostgreSQL.CRUD.InsertManager;
 import org.project.PostgreSQL.CRUD.SelectManager;
@@ -14,7 +18,8 @@ public class PostgreSQLManager {
     private String dataBaseURL = "jdbc:postgresql://localhost/";
     private Properties props;
     private Connection conn;
-    private CarFactory factory;
+    private DishFactory dishFactory;
+    private OfficeFactory officeFactory;
     private SelectManager selectManager;
     private InsertManager insertManager;
     private UpdateManager updateManager;
@@ -37,7 +42,8 @@ public class PostgreSQLManager {
         } catch(SQLException e){
             e.printStackTrace();
         }
-        factory = new CarFactory();
+        dishFactory = new DishFactory();
+        officeFactory = new OfficeFactory();
         selectManager = new SelectManager(conn);
         insertManager = new InsertManager(conn);
         updateManager = new UpdateManager(conn);
@@ -48,9 +54,11 @@ public class PostgreSQLManager {
         selectManager.selectAll();
     }
 
-    public double insertCarsInBulk(int n, LinkedList<Car> cars){
+    public double insertInBulk(int n,
+                               LinkedList<Dish> dishes,
+                               LinkedList<Office> offices){
         double start = System.currentTimeMillis();
-        insertManager.insertInBulk(n, cars);
+        insertManager.insertInBulk(n, dishes, offices);
         double finish = System.currentTimeMillis();
         return (finish-start)/1000;
     }
@@ -60,9 +68,9 @@ public class PostgreSQLManager {
         double finish = System.currentTimeMillis();
         return (finish-start)/1000;
     }
-    public double updateCarsInBulk(int n, LinkedList<Car> cars){
+    public double updateCarsInBulk(int n, LinkedList<Dish> dishes){
         double start = System.currentTimeMillis();
-        updateManager.updateInBulk(n, cars);
+        updateManager.updateInBulk(n, dishes);
         double finish = System.currentTimeMillis();
         return (finish-start)/1000;
     }
@@ -73,7 +81,11 @@ public class PostgreSQLManager {
         return (finish-start)/1000;
     }
 
-    public CarFactory getFactory() {
-        return factory;
+    public DishFactory getDishFactory() {
+        return dishFactory;
+    }
+
+    public OfficeFactory getOfficeFactory() {
+        return officeFactory;
     }
 }

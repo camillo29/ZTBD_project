@@ -1,7 +1,7 @@
 package org.project.PostgreSQL.CRUD;
 
 
-import org.project.PostgreSQL.Car;
+import org.project.Models.Dish;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -15,33 +15,16 @@ public class UpdateManager {
         this.conn = conn;
     }
 
-    public void updateOneCar(){
-        try {
-            PreparedStatement ps = conn.prepareStatement("UPDATE public.\"Cars\" SET \"model\" = ? WHERE \"id\" = ?");
-            ps.setString(1, "v6");
-            ps.setInt(2, 1);
-            ps.executeUpdate();
-        } catch(SQLException e){
-            e.printStackTrace();
-        }
-    }
-    public void updateInBulk(final int n, final LinkedList<Car> cars){
+    public void updateInBulk(final int n, final LinkedList<Dish> dishes){
         try {
             conn.setAutoCommit(false);
-            PreparedStatement ps = conn.prepareStatement("UPDATE public.\"Cars\" SET" +
-                    " \"model\" = ?, \"engineCapacity\" = ?, \"kilometersTraversed\" = ?, \"price\" = ?, \"carBrandId\" = ?, \"fuelTypeId\" = ?, \"gearBoxTypeId\" = ?, \"officeId\" = ?, \"personId\" = ?" +
-                    " WHERE ctid in (SELECT ctid from public.\"Cars\" LIMIT ?)");
-            for(Car car: cars){
-                ps.setString(1, car.getModel());
-                ps.setInt(2, car.getEngineCapacity());
-                ps.setInt(3, car.getKilometersTraversed());
-                ps.setInt(4, car.getPrice());
-                ps.setInt(5, car.getCarBrandId());
-                ps.setInt(6, car.getFuelTypeId());
-                ps.setInt(7, car.getGearBoxTypeId());
-                ps.setInt(8, car.getOfficeId());
-                ps.setInt(9, car.getPersonId());
-                ps.setInt(10, n);
+            PreparedStatement ps = conn.prepareStatement("UPDATE public.dishes SET" +
+                    " description = ?, name = ?, price = ?" +
+                    " WHERE ctid in (SELECT ctid from public.dishes LIMIT ?)");
+            for(Dish dish: dishes){
+                ps.setString(1, dish.getDescription());
+                ps.setString(2, dish.getName());
+                ps.setDouble(3, dish.getPrice());
                 ps.addBatch();
             }
             ps.executeBatch();

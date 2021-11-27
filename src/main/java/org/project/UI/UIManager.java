@@ -11,7 +11,8 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import org.project.PostgreSQL.Car;
+import org.project.Models.Dish;
+import org.project.Models.Office;
 import org.project.PostgreSQL.PostgreSQLManager;
 
 import java.util.LinkedList;
@@ -93,8 +94,11 @@ public class UIManager {
         createButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                double timeNeeded = postgres.insertCarsInBulk(Integer.parseInt(quantity.getText()),
-                        postgres.getFactory().createCarsInBulk(Integer.parseInt(quantity.getText())));
+                LinkedList<Dish> dishes = postgres.getDishFactory().createDishesInBulk(Integer.parseInt(quantity.getText()));
+                LinkedList<Office> offices = postgres.getOfficeFactory().createOfficesInBulk(Integer.parseInt(quantity.getText()));
+                double timeNeeded = postgres.insertInBulk(Integer.parseInt(quantity.getText()),
+                        dishes,
+                        offices);
                 System.out.println("Time to insert "+quantity.getText()+" records into PostgreSQL = "+timeNeeded + "s");
                 setPostgresTimeText(timeNeeded + " s");
             }
@@ -111,7 +115,7 @@ public class UIManager {
             @Override
             public void handle(ActionEvent event) {
                 double timeNeeded = postgres.updateCarsInBulk(Integer.parseInt(quantity.getText()),
-                        postgres.getFactory().createCarsInBulk(Integer.parseInt(quantity.getText())));
+                        postgres.getDishFactory().createDishesInBulk(Integer.parseInt(quantity.getText())));
                 System.out.println("Time to update "+quantity.getText()+" records in PostgreSQL = "+timeNeeded + "s");
                 setPostgresTimeText(timeNeeded + " s");
             }
