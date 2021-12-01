@@ -100,13 +100,29 @@ ALTER TABLE public.order_dish_id_seq OWNER TO postgres;
 -- Name: orders; Type: TABLE; Schema: public; Owner: postgres
 --
 
+CREATE TABLE public.discount_type(
+    id bigint NOT NULL,
+    name character varying(255)
+);
+
+ALTER TABLE public.discount_type OWNER TO postgres;
+
+CREATE SEQUENCE public.discount_type_id_seq
+    AS integer
+    START WITH 6
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER TABLE public.discount_type_id_seq OWNER TO postgres;
+
 CREATE TABLE public.orders (
     id bigint NOT NULL,
     address character varying(255),
     delivered boolean,
-    total_price double precision,
+    discount_id bigint,
     client_id bigint,
-    employee_id bigint,
     office_id bigint
 );
 
@@ -130,12 +146,9 @@ ALTER TABLE public.orders_id_seq OWNER TO postgres;
 
 CREATE TABLE public.people (
     id bigint NOT NULL,
-    e_mail character varying(255) NOT NULL,
-    fired boolean,
     name character varying(255) NOT NULL,
     phone_number character varying(255) NOT NULL,
-    surname character varying(255) NOT NULL,
-    office_id bigint
+    surname character varying(255) NOT NULL
 );
 
 
@@ -183,7 +196,8 @@ CREATE TABLE public.users (
     id bigint NOT NULL,
     password character varying(255),
     username character varying(255),
-    person_id bigint
+    person_id bigint,
+    role_id bigint
 );
 
 
@@ -203,22 +217,6 @@ ALTER TABLE public.users_id_seq OWNER TO postgres;
 -- TOC entry 208 (class 1259 OID 26155)
 -- Name: users_roles; Type: TABLE; Schema: public; Owner: postgres
 --
-
-CREATE TABLE public.users_roles (
-    user_id bigint NOT NULL,
-    roles_id bigint NOT NULL
-);
-
-
-ALTER TABLE public.users_roles OWNER TO postgres;
-
---CREATE SEQUENCE public.users_roles_id_seq
---    AS integer
---    START WITH 1
---    INCREMENT BY 1
---    NO MINVALUE
---    NO MAXVALUE
---    CACHE 1;
 
 
 --ALTER TABLE public.users_roles_id_seq OWNER TO postgres;
@@ -254,6 +252,8 @@ ALTER TABLE ONLY public.order_dish
 -- TOC entry 2889 (class 2606 OID 26133)
 -- Name: orders orders_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
+ALTER TABLE ONLY public.discount_type
+    ADD CONSTRAINT discount_type_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY public.orders
     ADD CONSTRAINT orders_pkey PRIMARY KEY (id);
@@ -291,14 +291,13 @@ ALTER TABLE ONLY public.users
 -- Name: users_roles users_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.users_roles
-    ADD CONSTRAINT users_roles_pkey PRIMARY KEY (user_id, roles_id);
-
 ALTER TABLE ONLY public.dishes ALTER COLUMN id SET DEFAULT nextval('public.dishes_id_seq'::regclass);
 
 ALTER TABLE ONLY public.offices ALTER COLUMN id SET DEFAULT nextval('public.offices_id_seq'::regclass);
 
 ALTER TABLE ONLY public.order_dish ALTER COLUMN id SET DEFAULT nextval('public.order_dish_id_seq'::regclass);
+
+ALTER TABLE ONLY public.discount_type ALTER COLUMN id SET DEFAULT nextval('public.discount_type_id_seq'::regclass);
 
 ALTER TABLE ONLY public.orders ALTER COLUMN id SET DEFAULT nextval('public.orders_id_seq'::regclass);
 
@@ -318,34 +317,7 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 --
 
 ALTER TABLE ONLY public.order_dish
-    ADD CONSTRAINT fk1fevhe8ke4l3uebaotqn5ae77 FOREIGN KEY (order_id) REFERENCES public.orders(id);
-
-
---
--- TOC entry 2906 (class 2606 OID 26200)
--- Name: users_roles fk2o0jvgh89lemvvo17cbqvdxaa; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.users_roles
-    ADD CONSTRAINT fk2o0jvgh89lemvvo17cbqvdxaa FOREIGN KEY (user_id) REFERENCES public.users(id);
-
-
---
--- TOC entry 2905 (class 2606 OID 26195)
--- Name: users_roles fka62j07k5mhgifpp955h37ponj; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.users_roles
-    ADD CONSTRAINT fka62j07k5mhgifpp955h37ponj FOREIGN KEY (roles_id) REFERENCES public.roles(id);
-
-
---
--- TOC entry 2901 (class 2606 OID 26175)
--- Name: orders fkgd67qo7p9pvyabrt03jamvni5; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.orders
-    ADD CONSTRAINT fkgd67qo7p9pvyabrt03jamvni5 FOREIGN KEY (employee_id) REFERENCES public.users(id);
+    ADD CONSTRAINT fk1fevhe8ke4l3uebaotqn5ae77 FOREIGN KEY (order_id) REFERENCES public.orders(id) ON DELETE CASCADE;
 
 
 --
@@ -354,7 +326,11 @@ ALTER TABLE ONLY public.orders
 --
 
 ALTER TABLE ONLY public.orders
-    ADD CONSTRAINT fkojjigrbyd7qrcwrxvr7e9bdr2 FOREIGN KEY (client_id) REFERENCES public.users(id);
+    ADD CONSTRAINT orders_discount_type_fkey FOREIGN KEY (discount_id) REFERENCES public.discount_type(id);
+
+
+ALTER TABLE ONLY public.orders
+    ADD CONSTRAINT fkojjigrbyd7qrcwrxvr7e9bdr2 FOREIGN KEY (client_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
@@ -366,14 +342,6 @@ ALTER TABLE ONLY public.orders
     ADD CONSTRAINT fkoypdvlnn1p9wj240bw078746b FOREIGN KEY (office_id) REFERENCES public.offices(id);
 
 
---
--- TOC entry 2903 (class 2606 OID 26185)
--- Name: people fkp7vat0x7v0dsjnme75grid8p6; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.people
-    ADD CONSTRAINT fkp7vat0x7v0dsjnme75grid8p6 FOREIGN KEY (office_id) REFERENCES public.offices(id);
-
 
 --
 -- TOC entry 2904 (class 2606 OID 26190)
@@ -381,8 +349,10 @@ ALTER TABLE ONLY public.people
 --
 
 ALTER TABLE ONLY public.users
-    ADD CONSTRAINT fksv7wp99d6g5x8iisfpjf6sbpg FOREIGN KEY (person_id) REFERENCES public.people(id);
+    ADD CONSTRAINT fksv7wp99d6g5x8iisfpjf6sbpg FOREIGN KEY (person_id) REFERENCES public.people(id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT User_roleId_fkey FOREIGN KEY (role_id) REFERENCES public.roles(id);
 
 --
 -- TOC entry 2898 (class 2606 OID 26160)
@@ -393,6 +363,7 @@ ALTER TABLE ONLY public.order_dish
     ADD CONSTRAINT fksxcogiw9xscinh77ixpor5apo FOREIGN KEY (dish_id) REFERENCES public.dishes(id);
 
 
+
 -- Completed on 2021-11-27 11:02:47
 
 --
@@ -401,3 +372,9 @@ ALTER TABLE ONLY public.order_dish
 
 INSERT INTO public.roles values (1, 'admin');
 INSERT INTO public.roles values (2, 'client');
+
+INSERT INTO public.discount_type values (0, 'None');
+INSERT INTO public.discount_type values (1, 'Student');
+INSERT INTO public.discount_type values (2, 'Veteran');
+INSERT INTO public.discount_type values (3, 'Big family');
+INSERT INTO public.discount_type values (4, 'Disabled');

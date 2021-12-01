@@ -11,25 +11,21 @@ public class DeleteManager {
         this.conn = conn;
     }
 
-    public void deleteOneCar(final int id) {
-        try {
-            PreparedStatement ps = conn.prepareStatement("DELETE FROM public.\"Cars\"" +
-                    " WHERE \"id\" = ?");
-            ps.setInt(1, id);
-            ps.executeUpdate();
-        } catch(SQLException e){
-            e.printStackTrace();
-        }
-    }
     public void deleteInBulk(final int n){
         try {
-            PreparedStatement ps = conn.prepareStatement("DELETE FROM public.\"Cars\" " +
-                    "WHERE ctid IN " +
-                    "(SELECT ctid FROM public.\"Cars\" LIMIT ?)");
+            conn.setAutoCommit(false);
+            PreparedStatement ps = conn.prepareStatement("DELETE from public.people " +
+                    "WHERE ctid IN (SELECT ctid FROM public.people LIMIT ?)");
             ps.setInt(1, n);
             ps.executeUpdate();
-        } catch(SQLException e){
+            conn.commit();
+        } catch(Exception e){
             e.printStackTrace();
+            try{
+                conn.rollback();
+            }catch(SQLException sqlE){
+                sqlE.printStackTrace();
+            }
         }
     }
 }

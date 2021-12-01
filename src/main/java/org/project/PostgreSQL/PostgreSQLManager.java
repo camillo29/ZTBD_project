@@ -1,10 +1,8 @@
 package org.project.PostgreSQL;
 
 import org.flywaydb.core.Flyway;
-import org.project.Factories.DishFactory;
-import org.project.Factories.OfficeFactory;
-import org.project.Models.Dish;
-import org.project.Models.Office;
+import org.project.Factories.*;
+import org.project.Models.*;
 import org.project.PostgreSQL.CRUD.DeleteManager;
 import org.project.PostgreSQL.CRUD.InsertManager;
 import org.project.PostgreSQL.CRUD.SelectManager;
@@ -18,8 +16,14 @@ public class PostgreSQLManager {
     private String dataBaseURL = "jdbc:postgresql://localhost/";
     private Properties props;
     private Connection conn;
+    //Factories
     private DishFactory dishFactory;
     private OfficeFactory officeFactory;
+    private PersonFactory personFactory;
+    private UserFactory userFactory;
+    private OrderFactory orderFactory;
+
+    //CRUD
     private SelectManager selectManager;
     private InsertManager insertManager;
     private UpdateManager updateManager;
@@ -44,6 +48,9 @@ public class PostgreSQLManager {
         }
         dishFactory = new DishFactory();
         officeFactory = new OfficeFactory();
+        personFactory = new PersonFactory();
+        userFactory = new UserFactory();
+        orderFactory = new OrderFactory();
         selectManager = new SelectManager(conn);
         insertManager = new InsertManager(conn);
         updateManager = new UpdateManager(conn);
@@ -56,13 +63,16 @@ public class PostgreSQLManager {
 
     public double insertInBulk(int n,
                                LinkedList<Dish> dishes,
-                               LinkedList<Office> offices){
+                               LinkedList<Office> offices,
+                               LinkedList<Person> people,
+                               LinkedList<User> users,
+                               LinkedList<Order> orders){
         double start = System.currentTimeMillis();
-        insertManager.insertInBulk(n, dishes, offices);
+        insertManager.insertInBulk(n, dishes, offices, people, users, orders);
         double finish = System.currentTimeMillis();
         return (finish-start)/1000;
     }
-    public double deleteCarsInBulk(int n){
+    public double deleteInBulk(int n){
         double start = System.currentTimeMillis();
         deleteManager.deleteInBulk(n);
         double finish = System.currentTimeMillis();
@@ -74,9 +84,9 @@ public class PostgreSQLManager {
         double finish = System.currentTimeMillis();
         return (finish-start)/1000;
     }
-    public double selectCarsInBulk(int n){
+    public double selectInBulk(int n){
         double start = System.currentTimeMillis();
-        selectManager.selectCarsInBulk(n);
+        selectManager.selectAllWithLimit(n);
         double finish = System.currentTimeMillis();
         return (finish-start)/1000;
     }
@@ -87,5 +97,17 @@ public class PostgreSQLManager {
 
     public OfficeFactory getOfficeFactory() {
         return officeFactory;
+    }
+
+    public PersonFactory getPersonFactory() {
+        return personFactory;
+    }
+
+    public UserFactory getUserFactory() {
+        return userFactory;
+    }
+
+    public OrderFactory getOrderFactory() {
+        return orderFactory;
     }
 }

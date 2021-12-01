@@ -11,8 +11,7 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import org.project.Models.Dish;
-import org.project.Models.Office;
+import org.project.Models.*;
 import org.project.PostgreSQL.PostgreSQLManager;
 
 import java.util.LinkedList;
@@ -96,9 +95,15 @@ public class UIManager {
             public void handle(ActionEvent event) {
                 LinkedList<Dish> dishes = postgres.getDishFactory().createDishesInBulk(Integer.parseInt(quantity.getText()));
                 LinkedList<Office> offices = postgres.getOfficeFactory().createOfficesInBulk(Integer.parseInt(quantity.getText()));
+                LinkedList<Person> people = postgres.getPersonFactory().createPeopleInBulk(Integer.parseInt(quantity.getText()));
+                LinkedList<User> users = postgres.getUserFactory().createUsersInBulk(Integer.parseInt(quantity.getText()));
+                LinkedList<Order> orders = postgres.getOrderFactory().createOrdersInBulk(Integer.parseInt(quantity.getText()));
                 double timeNeeded = postgres.insertInBulk(Integer.parseInt(quantity.getText()),
                         dishes,
-                        offices);
+                        offices,
+                        people,
+                        users,
+                        orders);
                 System.out.println("Time to insert "+quantity.getText()+" records into PostgreSQL = "+timeNeeded + "s");
                 setPostgresTimeText(timeNeeded + " s");
             }
@@ -106,7 +111,7 @@ public class UIManager {
         readButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                double timeNeeded = postgres.selectCarsInBulk(Integer.parseInt(quantity.getText()));
+                double timeNeeded = postgres.selectInBulk(Integer.parseInt(quantity.getText()));
                 System.out.println("Time to select "+quantity.getText()+" records from PostgreSQL = "+timeNeeded + "s");
                 setPostgresTimeText(timeNeeded + " s");
             }
@@ -123,7 +128,7 @@ public class UIManager {
         deleteButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                double timeNeeded = postgres.deleteCarsInBulk(Integer.parseInt(quantity.getText()));
+                double timeNeeded = postgres.deleteInBulk(Integer.parseInt(quantity.getText()));
                 System.out.println("Time to delete "+quantity.getText()+" records from PostgreSQL = "+timeNeeded + "s");
                 setPostgresTimeText(timeNeeded + " s");
             }
