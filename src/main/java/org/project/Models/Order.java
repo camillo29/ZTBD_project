@@ -5,6 +5,7 @@ public class Order {
     private String address;
     private boolean delivered;
     private int discountType;
+    private String mongoDiscountType;
 
     public int getId() {
         return id;
@@ -38,5 +39,11 @@ public class Order {
         return discountType;
     }
 
+    public String getMongoDiscountType() {
+        return mongoDiscountType;
+    }
 
+    public void setMongoDiscountType(String mongoDiscountType) {
+        this.mongoDiscountType = mongoDiscountType;
+    }
 }

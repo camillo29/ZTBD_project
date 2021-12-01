@@ -12,6 +12,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.project.Models.*;
+import org.project.Mongo.MongoManager;
 import org.project.PostgreSQL.PostgreSQLManager;
 
 import java.util.LinkedList;
@@ -89,7 +90,7 @@ public class UIManager {
         primaryStage.show();
     }
 
-    public void addHandlersToCRUDButtons(PostgreSQLManager postgres){
+    public void addHandlersToCRUDButtons(PostgreSQLManager postgres, MongoManager oneCollectionManager){
         createButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -98,39 +99,57 @@ public class UIManager {
                 LinkedList<Person> people = postgres.getPersonFactory().createPeopleInBulk(Integer.parseInt(quantity.getText()));
                 LinkedList<User> users = postgres.getUserFactory().createUsersInBulk(Integer.parseInt(quantity.getText()));
                 LinkedList<Order> orders = postgres.getOrderFactory().createOrdersInBulk(Integer.parseInt(quantity.getText()));
-                double timeNeeded = postgres.insertInBulk(Integer.parseInt(quantity.getText()),
+                double timeNeededPostgres = postgres.insertInBulk(Integer.parseInt(quantity.getText()),
                         dishes,
                         offices,
                         people,
                         users,
                         orders);
-                System.out.println("Time to insert "+quantity.getText()+" records into PostgreSQL = "+timeNeeded + "s");
-                setPostgresTimeText(timeNeeded + " s");
+                double timeNeededOneCollection = oneCollectionManager.oneCollectionInsertInBulk(Integer.parseInt(quantity.getText()),
+                        dishes,
+                        offices,
+                        people,
+                        users,
+                        orders);
+                System.out.println("Time to insert "+quantity.getText()+" records into PostgreSQL = "+timeNeededPostgres + "s");
+                System.out.println("Time to insert "+quantity.getText()+" records into OneCollection = "+timeNeededOneCollection + "s");
+                setPostgresTimeText(timeNeededPostgres + " s");
+                setMongoTimeText(timeNeededOneCollection + " s");
             }
         });
         readButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                double timeNeeded = postgres.selectInBulk(Integer.parseInt(quantity.getText()));
-                System.out.println("Time to select "+quantity.getText()+" records from PostgreSQL = "+timeNeeded + "s");
-                setPostgresTimeText(timeNeeded + " s");
+                double timeNeededPostgres = postgres.selectInBulk(Integer.parseInt(quantity.getText()));
+                double timeNeededOneCollection = oneCollectionManager.oneCollectionFindInBulk(Integer.parseInt(quantity.getText()));
+                System.out.println("Time to select "+quantity.getText()+" records from PostgreSQL = "+timeNeededPostgres + "s");
+                System.out.println("Time to select "+quantity.getText()+" records from MongoDBOneCollection = "+timeNeededOneCollection + "s");
+                setPostgresTimeText(timeNeededPostgres + " s");
+                setMongoTimeText(timeNeededOneCollection + " s");
             }
         });
         updateButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                double timeNeeded = postgres.updateCarsInBulk(Integer.parseInt(quantity.getText()),
+                double timeNeededPostgres = postgres.updateInBulk(Integer.parseInt(quantity.getText()),
                         postgres.getDishFactory().createDishesInBulk(Integer.parseInt(quantity.getText())));
-                System.out.println("Time to update "+quantity.getText()+" records in PostgreSQL = "+timeNeeded + "s");
-                setPostgresTimeText(timeNeeded + " s");
+                double timeNeededOneCollection = oneCollectionManager.oneCollectionUpdateInBulk(Integer.parseInt(quantity.getText()));
+                System.out.println("Time to update "+quantity.getText()+" records in PostgreSQL = "+timeNeededPostgres + "s");
+                System.out.println("Time to update "+quantity.getText()+" records in MongoDBOneCollection = "+timeNeededOneCollection + "s");
+                setPostgresTimeText(timeNeededPostgres + " s");
+                setMongoTimeText(timeNeededOneCollection + " s");
+
             }
         });
         deleteButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                double timeNeeded = postgres.deleteInBulk(Integer.parseInt(quantity.getText()));
-                System.out.println("Time to delete "+quantity.getText()+" records from PostgreSQL = "+timeNeeded + "s");
-                setPostgresTimeText(timeNeeded + " s");
+                double timeNeededPostgres = postgres.deleteInBulk(Integer.parseInt(quantity.getText()));
+                double timeNeededOneCollection = oneCollectionManager.oneCollectionDeleteInBulk(Integer.parseInt(quantity.getText()));
+                System.out.println("Time to delete "+quantity.getText()+" records from PostgreSQL = "+timeNeededPostgres + "s");
+                System.out.println("Time to delete "+quantity.getText()+" records from MongoDBOneCollection = "+timeNeededOneCollection + "s");
+                setPostgresTimeText(timeNeededPostgres + " s");
+                setMongoTimeText(timeNeededOneCollection + " s");
             }
         });
     }

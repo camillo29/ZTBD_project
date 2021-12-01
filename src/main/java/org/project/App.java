@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.stage.Stage;
+import org.project.Mongo.MongoManager;
 import org.project.PostgreSQL.PostgreSQLManager;
 import org.project.UI.UIManager;
 
@@ -12,6 +13,7 @@ import java.util.LinkedList;
 public class App extends Application {
     private UIManager uiManager;
     private PostgreSQLManager postgresManager;
+    private MongoManager mongoOneCollectionManager;
 
     @Override
     public void start(Stage stage) {
@@ -22,11 +24,12 @@ public class App extends Application {
             public void handle(ActionEvent event) {
                 try {
                     postgresManager = new PostgreSQLManager(uiManager.getPostgreDatabase().getText(), uiManager.getPostgreUser().getText(), uiManager.getPostgrePassword().getText());
+                    mongoOneCollectionManager = new MongoManager("ZTBD_projekt_mongoOneCollection", "27017", "FoodDelivery");
+
                     uiManager.closeConnectionScene();
                     uiManager.setUpMainScene();
-                    uiManager.addHandlersToCRUDButtons(postgresManager);
+                    uiManager.addHandlersToCRUDButtons(postgresManager, mongoOneCollectionManager);
                     uiManager.showMainScene();
-                    //application();
                 } catch(Exception e){
                     e.printStackTrace();
                     //---------------SET UP CONNECTION ERROR TEXT LATER----------------//
@@ -35,14 +38,6 @@ public class App extends Application {
             }
         });
         uiManager.showConnectionScene();
-        /*
-        var javaVersion = SystemInfo.javaVersion();
-        var javafxVersion = SystemInfo.javafxVersion();
-        var label = new Label("Hello, JavaFX " + javafxVersion + ", running on Java " + javaVersion + ".");
-        var scene = new Scene(new StackPane(label), 640, 480);
-        stage.setScene(scene);
-        stage.show();
-        */
     }
 
     public static void main(String[] args) {

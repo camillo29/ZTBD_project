@@ -57,10 +57,6 @@ public class PostgreSQLManager {
         deleteManager = new DeleteManager(conn);
     }
 
-    public void selectCars(){
-        selectManager.selectAll();
-    }
-
     public double insertInBulk(int n,
                                LinkedList<Dish> dishes,
                                LinkedList<Office> offices,
@@ -78,7 +74,7 @@ public class PostgreSQLManager {
         double finish = System.currentTimeMillis();
         return (finish-start)/1000;
     }
-    public double updateCarsInBulk(int n, LinkedList<Dish> dishes){
+    public double updateInBulk(int n, LinkedList<Dish> dishes){
         double start = System.currentTimeMillis();
         updateManager.updateInBulk(n, dishes);
         double finish = System.currentTimeMillis();
