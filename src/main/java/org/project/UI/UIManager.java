@@ -90,7 +90,7 @@ public class UIManager {
         primaryStage.show();
     }
 
-    public void addHandlersToCRUDButtons(PostgreSQLManager postgres, MongoManager oneCollectionManager){
+    public void addHandlersToCRUDButtons(PostgreSQLManager postgres, MongoManager oneCollectionManager, MongoManager multipleCollectionsManager){
         createButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -111,10 +111,18 @@ public class UIManager {
                         people,
                         users,
                         orders);
+                double timeNeededMultipleCollections = multipleCollectionsManager.multipleCollectionsInsertInBulk(Integer.parseInt(quantity.getText()),
+                        dishes,
+                        offices,
+                        people,
+                        users,
+                        orders);
                 System.out.println("Time to insert "+quantity.getText()+" records into PostgreSQL = "+timeNeededPostgres + "s");
-                System.out.println("Time to insert "+quantity.getText()+" records into OneCollection = "+timeNeededOneCollection + "s");
+                System.out.println("Time to insert "+quantity.getText()+" records into MongoOneCollection = "+timeNeededOneCollection + "s");
+                System.out.println("Time to insert "+quantity.getText()+" records into MongoMultipleCollections = "+timeNeededMultipleCollections + "s");
+
                 setPostgresTimeText(timeNeededPostgres + " s");
-                setMongoTimeText(timeNeededOneCollection + " s");
+                setMongoTimeText("One collection: "+timeNeededOneCollection + " s\nMultiple collections: "+timeNeededMultipleCollections + " s");
             }
         });
         readButton.setOnAction(new EventHandler<ActionEvent>() {

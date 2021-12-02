@@ -27,6 +27,7 @@ public class UpdateManager {
 
     public void oneCollectionUpdateInBulk(int n){
         FindIterable<Document> documents = oneCollection.find().limit(n);
+
         ClientSession session = client.startSession();
         try{
             session.startTransaction();

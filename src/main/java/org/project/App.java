@@ -14,6 +14,7 @@ public class App extends Application {
     private UIManager uiManager;
     private PostgreSQLManager postgresManager;
     private MongoManager mongoOneCollectionManager;
+    private MongoManager mongoMultipleCollectionsManager;
 
     @Override
     public void start(Stage stage) {
@@ -25,10 +26,10 @@ public class App extends Application {
                 try {
                     postgresManager = new PostgreSQLManager(uiManager.getPostgreDatabase().getText(), uiManager.getPostgreUser().getText(), uiManager.getPostgrePassword().getText());
                     mongoOneCollectionManager = new MongoManager("ZTBD_projekt_mongoOneCollection", "27017", "FoodDelivery");
-
+                    mongoMultipleCollectionsManager = new MongoManager("ZTBD_projekt_mongoMultipleCollections", "27017");
                     uiManager.closeConnectionScene();
                     uiManager.setUpMainScene();
-                    uiManager.addHandlersToCRUDButtons(postgresManager, mongoOneCollectionManager);
+                    uiManager.addHandlersToCRUDButtons(postgresManager, mongoOneCollectionManager, mongoMultipleCollectionsManager);
                     uiManager.showMainScene();
                 } catch(Exception e){
                     e.printStackTrace();
