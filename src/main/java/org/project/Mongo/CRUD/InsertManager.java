@@ -166,12 +166,16 @@ public class InsertManager {
             }
             collections.get("users").insertMany(userDocuments);
             for(int i = 0; i<orders.size(); i++){
+                BasicDBList dishList = new BasicDBList();
+                dishList.add(new BasicDBObject("dish_id", dishDocuments.get(i).get("_id")));
+                dishList.add(new BasicDBObject("dish_id", dishDocuments.get(rn.nextInt(dishDocuments.size())).get("_id")));
                 orderDocuments.add(new Document()
                         .append("address", orders.get(i).getAddress())
                         .append("delivered", orders.get(i).isDelivered())
                         .append("discount_type", discountTypes.get(rn.nextInt(4)+1).get("_id"))
                         .append("client_id", userDocuments.get(i).get("_id"))
-                        .append("office_id", officeDocuments.get(i).get("_id")));
+                        .append("office_id", officeDocuments.get(i).get("_id"))
+                        .append("dishes", dishList));
             }
             collections.get("orders").insertMany(orderDocuments);
             session.commitTransaction();

@@ -41,7 +41,7 @@ public class SelectManager {
     public void selectAllWithLimit(final int n){
         try {
             Statement st = conn.createStatement();
-            /*ResultSet rs = */st.executeQuery("SELECT * FROM " +
+            /*ResultSet rs =*/st.executeQuery("SELECT * FROM " +
                     "public.orders o," +
                     "public.order_dish o_d," +
                     "public.dishes d," +

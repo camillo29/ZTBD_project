@@ -130,10 +130,12 @@ public class UIManager {
             public void handle(ActionEvent event) {
                 double timeNeededPostgres = postgres.selectInBulk(Integer.parseInt(quantity.getText()));
                 double timeNeededOneCollection = oneCollectionManager.oneCollectionFindInBulk(Integer.parseInt(quantity.getText()));
+                double timeNeededMultipleCollections = multipleCollectionsManager.multipleCollectionsFindInBulk(Integer.parseInt(quantity.getText()));
                 System.out.println("Time to select "+quantity.getText()+" records from PostgreSQL = "+timeNeededPostgres + "s");
                 System.out.println("Time to select "+quantity.getText()+" records from MongoDBOneCollection = "+timeNeededOneCollection + "s");
+                System.out.println("Time to select "+quantity.getText()+" records from MongoDBOneCollection = "+timeNeededMultipleCollections + "s");
                 setPostgresTimeText(timeNeededPostgres + " s");
-                setMongoTimeText(timeNeededOneCollection + " s");
+                setMongoTimeText("One collection: "+timeNeededOneCollection + " s\nMultiple collections: "+timeNeededMultipleCollections + " s");
             }
         });
         updateButton.setOnAction(new EventHandler<ActionEvent>() {

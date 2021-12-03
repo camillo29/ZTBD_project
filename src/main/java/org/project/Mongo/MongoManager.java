@@ -74,7 +74,7 @@ public class MongoManager {
     }
 
     public void initManagers(HashMap collections){
-        //findManager = new FindManager(collection);
+        findManager = new FindManager(collections);
         insertManager = new InsertManager(collections, client);
         //updateManager = new UpdateManager(collection, client);
         //deleteManager = new DeleteManager(collection, client);
@@ -121,6 +121,13 @@ public class MongoManager {
                                                   LinkedList<Order> orders){
         double start = System.currentTimeMillis();
         insertManager.multipleCollectionsInsertInBulk(n, dishes, offices, people, users, orders);
+        double finish = System.currentTimeMillis();
+        return (finish-start)/1000;
+    }
+
+    public double multipleCollectionsFindInBulk(int n){
+        double start = System.currentTimeMillis();
+        findManager.multipleCollectionsFindInBulk(n);
         double finish = System.currentTimeMillis();
         return (finish-start)/1000;
     }
