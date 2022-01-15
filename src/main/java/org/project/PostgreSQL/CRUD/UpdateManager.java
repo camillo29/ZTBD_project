@@ -1,8 +1,6 @@
 package org.project.PostgreSQL.CRUD;
 
-
 import org.project.Models.Dish;
-import org.project.Models.Order;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -1,13 +1,18 @@
 package org.project;
 
+import com.mongodb.MongoCommandException;
+import com.mongodb.MongoSecurityException;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.stage.Stage;
+import org.project.Exceptions.ErrorException;
 import org.project.Mongo.MongoManager;
+import org.project.Mongo.RowCountFetcher;
 import org.project.PostgreSQL.PostgreSQLManager;
 import org.project.UI.UIManager;
 
+import java.sql.SQLException;
 import java.util.LinkedList;
 
 public class App extends Application {
@@ -24,17 +29,31 @@ public class App extends Application {
             @Override
             public void handle(ActionEvent event) {
                 try {
-                    postgresManager = new PostgreSQLManager(uiManager.getPostgreDatabase().getText(), uiManager.getPostgreUser().getText(), uiManager.getPostgrePassword().getText());
-                    mongoOneCollectionManager = new MongoManager("ZTBD_projekt_mongoOneCollection", "27017", "FoodDelivery");
-                    mongoMultipleCollectionsManager = new MongoManager("ZTBD_projekt_mongoMultipleCollections", "27017");
+                    postgresManager = new PostgreSQLManager(
+                            uiManager.getPostgreDatabase().getText(),
+                            uiManager.getPostgreUser().getText(),
+                            uiManager.getPostgrePassword().getText());
+                    mongoOneCollectionManager = new MongoManager(
+                            uiManager.getMongoOneDB().getText(),
+                            "27017",
+                            "FoodDelivery",
+                            uiManager.getMongoUser().getText(),
+                            uiManager.getMongoPassword().getText());
+                    mongoMultipleCollectionsManager = new MongoManager(
+                            uiManager.getMongoMultipleDB().getText(),
+                            "27017",
+                            uiManager.getMongoUser().getText(),
+                            uiManager.getMongoPassword().getText());
                     uiManager.closeConnectionScene();
+                    uiManager.setCountFetcher(new RowCountFetcher(mongoOneCollectionManager, mongoMultipleCollectionsManager, postgresManager.getConn()));
                     uiManager.setUpMainScene();
                     uiManager.addHandlersToCRUDButtons(postgresManager, mongoOneCollectionManager, mongoMultipleCollectionsManager);
                     uiManager.showMainScene();
-                } catch(Exception e){
+                }catch(ErrorException e) {
+                    uiManager.showConnectionError(e.getMessage());
+                }catch(Exception e) {
                     e.printStackTrace();
-                    //---------------SET UP CONNECTION ERROR TEXT LATER----------------//
-                    //System.out.println("it works");
+                    uiManager.showConnectionError("Connection error!");
                 }
             }
         });

@@ -1,12 +1,17 @@
 package org.project.Mongo;
+import com.mongodb.MongoCommandException;
+import com.mongodb.MongoSecurityException;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import org.project.Exceptions.ErrorException;
 import org.project.Factories.*;
 import org.project.Models.*;
 import org.project.Mongo.CRUD.*;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -30,32 +35,40 @@ public class MongoManager {
     private UpdateManager updateManager;
     private DeleteManager deleteManager;
 
-    public MongoManager(final String dataBaseName, final String port, final String collectionName){
-        client = MongoClients.create("mongodb://localhost:" + port);
-        db = client.getDatabase(dataBaseName);
-        System.out.println("Mongo successfully connected to " + db.getName());
-        oneCollection = db.getCollection(collectionName);
+    public MongoManager(final String dataBaseName, final String port, final String collectionName, final String user, final String password)
+            throws ErrorException{
+        try {
+            client = MongoClients.create("mongodb://"+user+":" + URLEncoder.encode(password, "UTF-8") + "@localhost:" + port);
+            db = client.getDatabase(dataBaseName);
+            oneCollection = db.getCollection(collectionName);
+            initFactories();
+            initManagers(oneCollection);
+        } catch(UnsupportedEncodingException| MongoCommandException | MongoSecurityException e) {
+            throw new ErrorException("One collection connection error!");
+        }
 
-        initFactories();
-        initManagers(oneCollection);
+        System.out.println("Mongo successfully connected to " + db.getName());
     }
 
-    public MongoManager(final String dataBaseName, final String port){
-        client = MongoClients.create("mongodb://localhost:"+port);
-        db = client.getDatabase(dataBaseName);
+    public MongoManager(final String dataBaseName, final String port, final String user, final String password) throws ErrorException {
+        try {
+            client = MongoClients.create("mongodb://"+user+":" + URLEncoder.encode(password, "UTF-8") + "@localhost:" + port);
+            db = client.getDatabase(dataBaseName);
+            collections = new HashMap<>();
+            collections.put("dishes", db.getCollection("dishes"));
+            collections.put("offices", db.getCollection("offices"));
+            collections.put("orders", db.getCollection("orders"));
+            collections.put("users", db.getCollection("users"));
+            collections.put("people", db.getCollection("people"));
+            collections.put("discount_type", db.getCollection("discount_type"));
+            collections.put("roles", db.getCollection("roles"));
+            initFactories();
+            initManagers(collections);
+            insertManager.multipleCollectionsInsertBasicData();
+        } catch(UnsupportedEncodingException | MongoCommandException | MongoSecurityException e) {
+            throw new ErrorException("One collection connection error!");
+        }
         System.out.println("Mongo successfully connected to " + db.getName());
-        collections = new HashMap<>();
-        collections.put("dishes", db.getCollection("dishes"));
-        collections.put("offices", db.getCollection("offices"));
-        collections.put("orders", db.getCollection("orders"));
-        collections.put("users", db.getCollection("users"));
-        collections.put("people", db.getCollection("people"));
-        collections.put("discount_type", db.getCollection("discount_type"));
-        collections.put("roles", db.getCollection("roles"));
-
-        initFactories();
-        initManagers(collections);
-        insertManager.multipleCollectionsInsertBasicData();
     }
 
     public void initFactories(){
@@ -73,11 +86,11 @@ public class MongoManager {
         deleteManager = new DeleteManager(collection, client);
     }
 
-    public void initManagers(HashMap collections){
+    public void initManagers(HashMap<String, MongoCollection> collections){
         findManager = new FindManager(collections);
         insertManager = new InsertManager(collections, client);
-        //updateManager = new UpdateManager(collection, client);
-        //deleteManager = new DeleteManager(collection, client);
+        updateManager = new UpdateManager(collections, client);
+        deleteManager = new DeleteManager(collections, client);
     }
 
     public double oneCollectionInsertInBulk(int n,
@@ -99,9 +112,9 @@ public class MongoManager {
         return (finish-start)/1000;
     }
 
-    public double oneCollectionUpdateInBulk(int n){
+    public double oneCollectionUpdateInBulk(int n, LinkedList<Dish> dishes){
         double start = System.currentTimeMillis();
-        updateManager.oneCollectionUpdateInBulk(n);
+        updateManager.oneCollectionUpdateInBulk(n, dishes);
         double finish = System.currentTimeMillis();
         return (finish-start)/1000;
     }
@@ -132,4 +145,29 @@ public class MongoManager {
         return (finish-start)/1000;
     }
 
+    public double multipleCollectionsUpdateInBulk(int n, LinkedList<Dish> dishes){
+        double start = System.currentTimeMillis();
+        updateManager.multipleCollectionsUpdateInBulk(n, dishes);
+        double finish = System.currentTimeMillis();
+        return (finish-start)/1000;
+    }
+
+    public double multipleCollectionsDeleteInBulk(int n){
+        double start = System.currentTimeMillis();
+        deleteManager.multipleCollectionsDeleteInBulk(n);
+        double finish = System.currentTimeMillis();
+        return (finish-start)/1000;
+    }
+
+    public DishFactory getDishFactory() {
+        return dishFactory;
+    }
+
+    public MongoCollection getOneCollection() {
+        return oneCollection;
+    }
+
+    public HashMap<String, MongoCollection> getCollections() {
+        return collections;
+    }
 }

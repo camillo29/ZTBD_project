@@ -1,6 +1,7 @@
 package org.project.PostgreSQL;
 
 import org.flywaydb.core.Flyway;
+import org.project.Exceptions.ErrorException;
 import org.project.Factories.*;
 import org.project.Models.*;
 import org.project.PostgreSQL.CRUD.DeleteManager;
@@ -29,14 +30,14 @@ public class PostgreSQLManager {
     private UpdateManager updateManager;
     private DeleteManager deleteManager;
 
-    public PostgreSQLManager(final String dataBaseName, final String user, final String password){
+    public PostgreSQLManager(final String dataBaseName, final String user, final String password) throws ErrorException{
         dataBaseURL += dataBaseName;
         props = new Properties();
         props.setProperty("user", user);
         props.setProperty("password", password);
         Flyway flyway =
                 Flyway.configure()
-                        .dataSource( "jdbc:postgresql://localhost/ZTBD_projekt" , user , password )  // (url, user, password)
+                        .dataSource( "jdbc:postgresql://localhost/"+dataBaseName , user , password )  // (url, user, password)
                         .locations("db/migration")
                         .load();                                                           // Returns a `Flyway` object.
         flyway.migrate();
@@ -45,6 +46,7 @@ public class PostgreSQLManager {
             System.out.println("PostgreSQL successfully migrated and connected to " + conn.getCatalog());
         } catch(SQLException e){
             e.printStackTrace();
+            throw new ErrorException("PostgreSQL connection error!");
         }
         dishFactory = new DishFactory();
         officeFactory = new OfficeFactory();
@@ -105,5 +107,9 @@ public class PostgreSQLManager {
 
     public OrderFactory getOrderFactory() {
         return orderFactory;
+    }
+
+    public Connection getConn() {
+        return conn;
     }
 }

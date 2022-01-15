@@ -2,7 +2,6 @@ package org.project.PostgreSQL.CRUD;
 
 import org.project.Models.*;
 
-import javax.xml.transform.Result;
 import java.sql.*;
 import java.util.LinkedList;
 import java.util.Random;
@@ -50,14 +49,12 @@ public class InsertManager {
                 psPeople.setString(3, person.getSurname());
                 psPeople.addBatch();
             }
-
             psDishes.executeBatch();
             psOffices.executeBatch();
             psPeople.executeBatch();
             ResultSet peopleKeys = psPeople.getGeneratedKeys();
             ResultSet officesKeys = psOffices.getGeneratedKeys();
             ResultSet dishesKeys = psDishes.getGeneratedKeys();
-
             PreparedStatement psUsers = conn.prepareStatement("INSERT INTO public.users " +
                     "(password, username, person_id, role_id) " +
                     "VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
@@ -72,7 +69,6 @@ public class InsertManager {
             }
             psUsers.executeBatch();
             ResultSet usersKeys = psUsers.getGeneratedKeys();
-
             PreparedStatement psOrders = conn.prepareStatement("Insert INTO public.orders " +
                     "(address, delivered, discount_id, client_id, office_id) " +
                     "VALUES (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
@@ -99,7 +95,6 @@ public class InsertManager {
             }
             psOrders_Dishes.executeBatch();
             conn.commit();
-            //conn.setAutoCommit(true);
         } catch(Exception e){
             e.printStackTrace();
             try{

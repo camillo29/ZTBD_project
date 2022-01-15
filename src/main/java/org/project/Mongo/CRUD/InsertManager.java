@@ -2,13 +2,11 @@ package org.project.Mongo.CRUD;
 
 import com.mongodb.*;
 import com.mongodb.client.ClientSession;
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 import org.project.Models.*;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Random;
@@ -37,31 +35,37 @@ public class InsertManager {
                                           LinkedList<Order> orders){
         LinkedList<Document> documents = new LinkedList<>();
         for(int i = 0; i<orders.size(); i++){
-         BasicDBList dishList = new BasicDBList();
-         DBObject obj = new BasicDBObject();
-         obj.put("name", dishes.get(i).getName());
-         obj.put("description", dishes.get(i).getDescription());
-         obj.put("price", dishes.get(i).getPrice());
-         dishList.add(obj);
-         Document document = new Document()
-                 .append("address", orders.get(i).getAddress())
-                 .append("delivered", orders.get(i).isDelivered())
-                 .append("discount_type", orders.get(i).getMongoDiscountType())
-                 .append("office", new Document()
-                         .append("city", offices.get(i).getCity())
-                         .append("phone_number", offices.get(i).getPhone_number())
-                         .append("post_code", offices.get(i).getPost_code())
-                         .append("street", offices.get(i).getStreet()))
-                 .append("client", new Document()
-                         .append("username", users.get(i).getUserName())
-                         .append("password", users.get(i).getPassword())
-                         .append("role", rn.nextBoolean() ? "admin":"user")
-                         .append("person", new Document()
-                                 .append("name", people.get(i).getName())
-                                 .append("phone_number", people.get(i).getPhone_number())
-                                 .append("surname", people.get(i).getSurname())))
-                 .append("dishes", dishList);
-         documents.add(document);
+            BasicDBList dishList = new BasicDBList();
+            BasicDBList orderList = new BasicDBList();
+
+            DBObject dish = new BasicDBObject(new Document()
+                    .append("name", dishes.get(i).getName())
+                    .append("description", dishes.get(i).getDescription())
+                    .append("price", dishes.get(i).getPrice()));
+            dishList.add(dish);
+
+            DBObject order = new BasicDBObject(new Document()
+                    .append("address", orders.get(i).getAddress())
+                    .append("delivered", orders.get(i).isDelivered())
+                    .append("discount_type", orders.get(i).getMongoDiscountType())
+                    .append("office", new Document()
+                            .append("city", offices.get(i).getCity())
+                            .append("phone_number", offices.get(i).getPhone_number())
+                            .append("post_code", offices.get(i).getPost_code())
+                            .append("street", offices.get(i).getStreet()))
+                    .append("dishes", dishList));
+             orderList.add(order);
+
+            Document document = new Document()
+                 .append("username", users.get(i).getUserName())
+                 .append("password", users.get(i).getPassword())
+                 .append("role", rn.nextBoolean() ? "admin":"user")
+                 .append("person", new Document()
+                         .append("name", people.get(i).getName())
+                         .append("phone_number", people.get(i).getPhone_number())
+                         .append("surname", people.get(i).getSurname()))
+                 .append("orders", orderList);
+            documents.add(document);
         }
         ClientSession session = client.startSession();
         try{

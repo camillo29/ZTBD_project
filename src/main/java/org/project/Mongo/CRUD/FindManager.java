@@ -1,16 +1,13 @@
 package org.project.Mongo.CRUD;
 
-import com.mongodb.Mongo;
 import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import org.project.Mongo.MongoManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 
 public class FindManager {
@@ -46,6 +43,7 @@ public class FindManager {
                 .append("foreignField", "_id")
                 .append("as", append));
     }
+
     public void multipleCollectionsFindInBulk(final int n){
         List<Bson> filters = new ArrayList<>();
         filters.add(new Document("$limit", n));
