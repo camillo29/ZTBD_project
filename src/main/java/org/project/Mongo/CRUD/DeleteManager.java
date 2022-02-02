@@ -1,12 +1,9 @@
 package org.project.Mongo.CRUD;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.Cursor;
 import com.mongodb.MongoException;
 import com.mongodb.client.*;
-import org.bson.BSONObject;
 import org.bson.Document;
-import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;

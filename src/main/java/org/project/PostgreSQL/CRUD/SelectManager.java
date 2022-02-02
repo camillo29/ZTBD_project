@@ -1,12 +1,8 @@
 package org.project.PostgreSQL.CRUD;
-
-import org.project.PostgreSQL.JSONConverter;
-
 import java.sql.*;
 
 public class SelectManager {
     Connection conn;
-    //JSONConverter converter = new JSONConverter();
 
     public SelectManager(final Connection conn){
         this.conn = conn;
@@ -15,7 +11,7 @@ public class SelectManager {
     public void selectAllWithLimit(final int n){
         try {
             Statement st = conn.createStatement();
-            /*ResultSet rs =*/st.executeQuery("SELECT * FROM " +
+            st.executeQuery("SELECT * FROM " +
                     "public.orders o," +
                     "public.order_dish o_d," +
                     "public.dishes d," +
@@ -32,7 +28,6 @@ public class SelectManager {
                     "o_d.dish_id = d.id AND " +
                     "u.person_id = p.id AND " +
                     "u.role_id = r.id LIMIT " + n);
-            //System.out.println(converter.getJson(rs).toString());
         } catch(SQLException e){
             e.printStackTrace();
         }

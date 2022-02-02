@@ -1,6 +1,5 @@
 package org.project.Mongo;
 
-import com.mongodb.Mongo;
 import com.mongodb.client.MongoCollection;
 
 import java.sql.Connection;
