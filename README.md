@@ -6,7 +6,8 @@
 
 ----Polish/Polski----
 
-Projekt na Zaawansowane Technologie Baz Danych mający na celu napisanie aplikacji porównującej czas wykonania funkcji CRUD dla PostgreSQL i MongoDB
+Projekt na Zaawansowane Technologie Baz Danych mający na celu napisanie aplikacji porównującej czas wykonania funkcji CRUD dla PostgreSQL i MongoDB.
+
 Instrukcja uruchomienia
 1. Należy zainstalować bazę danych PostgreSQL oraz MongoDB
 2. Za pomocą narzędzia pgAdmin założyć bazę danych dla PostgreSQL
@@ -18,7 +19,8 @@ Instrukcja uruchomienia
 
 ----English/Angielski----
 
-Project for Advanced Database Technologies class focused on implementing an app that will allow comparing CRUD functions execution time of PostgreSQL and MongoDB
+Project for Advanced Database Technologies class focused on implementing an app that will allow comparing CRUD functions execution time of PostgreSQL and MongoDB.
+
 Instructions for running the application.
 1. Install PostgreSQL and MongoDB databases.
 2. With pgAdmin tool create PostgreSQL database.
