@@ -4,7 +4,8 @@
 - Flyway
 - MongoAPI
 
-----Polish/Polski----\n
+----Polish/Polski----
+
 Projekt na Zaawansowane Technologie Baz Danych mający na celu napisanie aplikacji porównującej czas wykonania funkcji CRUD dla PostgreSQL i MongoDB
 Instrukcja uruchomienia
 1. Należy zainstalować bazę danych PostgreSQL oraz MongoDB
@@ -15,7 +16,8 @@ Instrukcja uruchomienia
 5. Stworzyć nową konfigurację uruchomienia jeśli potrzeba (App to klasa main)
 6. Uruchomić aplikację.
 
-----English/Angielski----\n
+----English/Angielski----
+
 Project for Advanced Database Technologies class focused on implementing an app that will allow comparing CRUD functions execution time of PostgreSQL and MongoDB
 Instructions for running the application
 1. Install PostgreSQL and MongoDB databases.
